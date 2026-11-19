@@ -1,0 +1,33 @@
+# 静态服务配置示例：用于提供 fe_tuuz 仓库中的 dist 产物
+# 目标：index.html 永不缓存；带内容哈希的 assets/ 可长期强缓存
+#
+# 使用方式：把 root 改为 fe_tuuz 的本地路径，server_name 改为你的域名，
+# 然后 include 到 nginx 配置中。
+
+server {
+    listen 80;
+    server_name your-domain.example;
+    root /path/to/fe_tuuz;
+    index index.html;
+
+    # 入口文件：每次请求都回源，避免更新后仍命中旧 HTML
+    location = /index.html {
+        add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" always;
+        add_header Pragma "no-cache" always;
+        add_header Expires "0" always;
+        etag off;
+        if_modified_since off;
+    }
+
+    # 构建产物文件名带哈希，内容变化即换名，可以安全强缓存
+    location /assets/ {
+        expires 1y;
+        add_header Cache-Control "public, immutable" always;
+        try_files $uri =404;
+    }
+
+    # SPA 路由回退到 index.html；内部跳转仍会命中上面的 no-store 规则
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}

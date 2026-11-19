@@ -35,6 +35,14 @@ pnpm type-check
 VITE_BASE=/fe_tuuz/ pnpm build
 ```
 
+## 缓存策略
+
+`index.html` 必须始终回源，否则站点更新后浏览器仍会加载旧入口文件：
+
+- `index.html` 已写入 `Cache-Control: no-store, no-cache, must-revalidate, max-age=0`、`Pragma: no-cache`、`Expires: 0` 三个 meta 标签，会被带进 `dist/index.html`。
+- meta 标签不能覆盖服务器或 CDN 返回的 `Cache-Control` 响应头。实际部署时请使用 `deploy/nginx.conf.example` 中的 `location = /index.html` 规则（或 CDN 中对应的 Page Rule）强制不缓存。
+- `assets/` 中的文件名带内容哈希，可以长期强缓存（`public, immutable`），内容更新时文件名会变化，不会与入口文件产生不一致。
+
 ## 说明
 
 `fe_tuuz` 只保存静态构建产物，请勿直接在该仓库修改源码。
