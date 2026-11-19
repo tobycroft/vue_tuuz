@@ -1,0 +1,5 @@
+allowBuilds:
+  vue-demi: true
+
+minimumReleaseAgeExclude:
+  - '@nuxt/ui@4.13.0'

@@ -1,0 +1,11 @@
+node_modules
+dist
+.nuxt-ui
+auto-imports.d.ts
+components.d.ts
+*.local
+.env
+.env.*
+!.env.example
+.DS_Store
+*.log
